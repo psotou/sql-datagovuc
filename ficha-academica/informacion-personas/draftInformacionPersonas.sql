@@ -3,7 +3,7 @@ WITH
     AS
     (
         SELECT top 30
-            CP.COD_PERS           AS cod_pers
+          CP.COD_PERS           AS cod_pers
         , CP.RUT                AS rut
         , NBP.check_digit       AS dv
         , NBP.first_name        AS nombre
