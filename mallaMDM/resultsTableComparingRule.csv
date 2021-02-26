@@ -1,0 +1,7 @@
+comparing_id,entity_attribute_id,rule_type,parameter,process
+4,87,fuzzy_allow_empty,70,concat
+5,88,fuzzy_allow_empty,70,concat
+6,89,fuzzy_allow_empty,70,concat
+7,92,fuzzy_allow_empty,70,concat
+8,93,fuzzy_allow_empty,70,concat
+9,94,fuzzy_allow_empty,70,concat
