@@ -1,9 +1,9 @@
 /* THISSSSSSSSSSSSS */
 
-
-SELECT top 10
+WITH ONE AS (
+SELECT
     CP.COD_PERS              AS cod_pers
-    , NBP.RUT                AS rut
+    , NBP.rut                AS rut
     , NBP.check_digit        AS dv
     , NBP.first_name         AS nombre
     , NBP.paternal_last_name AS apellido_paterno
@@ -11,7 +11,7 @@ SELECT top 10
     , NBP.sex                AS sexo
     , CP.FECHA_NACIM         AS fecha_nacimiento
     , NBP.country_of_origin  AS pais_origen
-    , PSPD.LANG_CD           AS idioma
+    , CASE WHEN NBP.country_of_origin = 'Chile' THEN N'Español' ELSE HAI.NOM_IDIOM END  AS idioma
     , PSA.ADDRESS1           AS calle
     , PSA.ADDRESS2           AS num_calle
     , PSA.ADDRESS3           AS num_vivienda
@@ -20,6 +20,7 @@ SELECT top 10
     , CASE WHEN PSA.COUNTRY = 'CHL' THEN 'Chile' END  AS pais_direccion
     , CAST(PSA.EFFDT AS DATE) AS fecha_registro_dir
     , PSPD.PHONE              AS telefono
+    , GG.GOREMAL_EMAIL_ADDRESS AS email
     , CASE 
         WHEN NPSP.marital_status_id = 'D' AND NBP.sex = 'M' THEN 'Divorciado'
         WHEN NPSP.marital_status_id = 'D' AND NBP.sex = 'F' THEN 'Divorciada'
@@ -34,31 +35,116 @@ SELECT top 10
         WHEN NPSP.marital_status_id = 'P' THEN 'Acuerdo de Unión Civil'
         WHEN NPSP.marital_status_id = 'T' THEN 'Pareja superviviente'
         WHEN NPSP.marital_status_id = 'U' THEN 'No consta'
-      END           AS estado_civil
-    , NPSHP.name    AS plan_salud
-    , NPSA.name     AS afp
-    , NBP.is_alive  AS esta_vivo
-FROM NORMALIZADO_BANNER.PERSON AS NBP
-LEFT JOIN CORP.PERS            AS CP
+      END                            AS estado_civil
+    , NPSHP.name                     AS plan_salud
+    , NPSA.name                      AS afp
+    , CASE WHEN NBP.is_alive = 1 THEN 'S' ELSE 'N' END  AS esta_vivo
+    , NPSEL.name                     AS nivel_educacional
+    , HATGA.NOM_TIPO_GRADO_ACADEMICO AS tipo_grado_academico
+    , HAGA.ANO_OBTENIDO              AS ano_obtencion_grado
+    , HAGA.AREA_ESPECIALIZ           AS area_especializacion
+    , HAII1.NOM_INSTITUCION_INVESTIG AS nombre_institucion_investigacion
+    , HAGA.DOBLE_TITUL               AS doble_titulacion
+    , HAII2.NOM_INSTITUCION_INVESTIG AS nombre_inst_investig_doble_titulacion
+FROM NORMALIZADO_BANNER.PERSON                AS NBP
+LEFT JOIN CORP.PERS                           AS CP
     ON NBP.rut = CAST(CP.RUT AS INT)
-LEFT JOIN PEOPLE_SOFT.PS_PERSONAL_DATA  AS PSPD 
-    ON CAST(NBP.RUT AS nvarchar) = CASE WHEN CHARINDEX('-', PSPD.EMPLID) <> 0 THEN LEFT(PSPD.EMPLID, CHARINDEX('-', PSPD.EMPLID) - 1) END
-LEFT JOIN PEOPLE_SOFT.PS_ADDRESSES AS PSA 
-    ON CAST(NBP.RUT AS nvarchar) = CASE WHEN CHARINDEX('-', PSA.EMPLID) <> 0 THEN LEFT(PSA.EMPLID, CHARINDEX('-', PSA.EMPLID) - 1) END
+LEFT JOIN PEOPLE_SOFT.PS_PERSONAL_DATA        AS PSPD 
+    ON CAST(NBP.rut AS nvarchar) = CASE WHEN CHARINDEX('-', PSPD.EMPLID) <> 0 THEN LEFT(PSPD.EMPLID, CHARINDEX('-', PSPD.EMPLID) - 1) END
+LEFT JOIN PEOPLE_SOFT.PS_ADDRESSES            AS PSA 
+    ON CAST(NBP.rut AS nvarchar) = CASE WHEN CHARINDEX('-', PSA.EMPLID) <> 0 THEN LEFT(PSA.EMPLID, CHARINDEX('-', PSA.EMPLID) - 1) END
     AND PSPD.EMPLID = PSA.EMPLID
     AND PSA.ADDRESS_TYPE = 'HOME'
-LEFT JOIN NORMALIZADO_PEOPLE_SOFT.PERSON AS NPSP 
+LEFT JOIN NORMALIZADO_PEOPLE_SOFT.PERSON      AS NPSP 
     ON CAST(NBP.rut AS NVARCHAR) = NPSP.rut
 LEFT JOIN NORMALIZADO_PEOPLE_SOFT.HEALTH_PLAN AS NPSHP 
     ON NPSP.health_plan_id = NPSHP.code
-LEFT JOIN NORMALIZADO_PEOPLE_SOFT.AFP AS NPSA 
+LEFT JOIN NORMALIZADO_PEOPLE_SOFT.AFP         AS NPSA 
     ON NPSP.afp_id = NPSA.code
+LEFT JOIN HISTACADEMICO.GRADO_ACADEMICO       AS HAGA
+    ON CP.COD_PERS = HAGA.COD_PERS
+LEFT JOIN HISTACADEMICO.TIPO_GRADO_ACADEMICO  AS HATGA
+    ON HAGA.COD_TIPO_GRADO_ACADEMICO = HATGA.COD_TIPO_GRADO_ACADEMICO
+LEFT JOIN HISTACADEMICO.INSTITUCION_INVESTIG  AS HAII1
+    ON HAGA.COD_INSTITUCION_INVESTIG = HAII1.COD_INSTITUCION_INVESTIG
+LEFT JOIN HISTACADEMICO.INSTITUCION_INVESTIG  AS HAII2
+    ON HAGA.COD_INSTITUCION_INVESTIG_DOBLE = HAII2.COD_INSTITUCION_INVESTIG
+LEFT JOIN NORMALIZADO_PEOPLE_SOFT.EDUCATIONAL_LEVEL AS NPSEL
+    ON NPSP.educational_level_id = NPSEL.code
+LEFT JOIN HISTACADEMICO.IDIOM_ACADEMICO             AS HAIA
+    ON CP.COD_PERS = HAIA.COD_PERS
+LEFT JOIN HISTACADEMICO.IDIOM                       AS HAI 
+    ON HAIA.COD_IDIOM = HAI.COD_IDIOM
+    AND HAIA.COD_NIVEL_IDIOM = 1
+LEFT JOIN GENERAL.GOREMAL                           AS GG 
+    ON NBP.banner_person_id = GG.GOREMAL_PIDM
+GROUP BY
+    CP.COD_PERS              
+    , NBP.rut                
+    , NBP.check_digit        
+    , NBP.first_name         
+    , NBP.paternal_last_name 
+    , NBP.maternal_last_name 
+    , NBP.sex                
+    , CP.FECHA_NACIM       
+    , NBP.country_of_origin  
+    , HAI.NOM_IDIOM          
+    , PSA.ADDRESS1           
+    , PSA.ADDRESS2           
+    , PSA.ADDRESS3           
+    , PSA.CITY               
+    , PSA.COUNTY             
+    , PSA.COUNTRY
+    , PSA.EFFDT 
+    , PSPD.PHONE              
+    , GG.GOREMAL_EMAIL_ADDRESS
+    , NPSP.marital_status_id   
+    , NPSHP.name              
+    , NPSA.name               
+    , NBP.is_alive
+    , NPSEL.name                     
+    , HATGA.NOM_TIPO_GRADO_ACADEMICO 
+    , HAGA.ANO_OBTENIDO              
+    , HAGA.AREA_ESPECIALIZ           
+    , HAII1.NOM_INSTITUCION_INVESTIG 
+    , HAGA.DOBLE_TITUL               
+    , HAII2.NOM_INSTITUCION_INVESTIG 
+
+)
+select top 100 * from one where len(rut) > 7
+
+SELECT count(distinct rut) FROM ONE -- 321611 cod_pers
+SELECT count(1) FROM ONE --361774
+where idioma IS NOT NULL AND idioma <> N'Español'
+
+SELECT * 
+FROM INFORMATION_SCHEMA.VIEW_TABLE_USAGE 
+WHERE view_schema = 'MDIUC'
+and VIEW_NAME like '%ACADEMICO_SIPA%'
+
+
+SELECT top 10 * from MDIUC.ACADEMICO_SIPA 
+SELECT count(distinct cod_pers) from MDIUC.ACADEMICO_SIPA -- 3575
+
+select top 10 * from PLA.PLANTA_ACADEMICA
+select count(1) from PLA.PLANTA_ACADEMICA                   -- 32843
+select count(distinct RUT_DV) from PLA.PLANTA_ACADEMICA     -- 6892
+
+
 
 /* -------------------------------------------------------------------------- */
 
 select * from information_schema.tables where table_schema like '%people%'
+select * from information_schema.columns where column_name like '%cod_idiom%'
 
-select top 10 * from HISTACADEMICO.CONTACTO
+
+select * from HISTACADEMICO.IDIOM
+select top 10 * from HISTACADEMICO.IDIOM_ACADEMICO
+select top 10 * from HISTACADEMICO.NIVEL_IDIOM
+
+SELECT * FROM UTILS.ColumnType('HISTACADEMICO', 'IDIOM_ACADEMICO')
+
+select top 10 * from HISTACADEMICO.INSTITUCION_INVESTIG
 
 select top 10 * from HISTACADEMICO.USUARIO
 select count(distinct DIRECCION_INTERNET) from HISTACADEMICO.USUARIO          --252
@@ -109,8 +195,18 @@ name
 created_at
 */
 
+select top 10 * from GENERAL.GOREMAL WHERE goremal_pidm = 68485
+
+SELECT top 100
+person.first_name
+, person.paternal_last_name
+, goremal.goremal_email_address
+from NORMALIZADO_BANNER.person 
+left join GENERAL.GOREMAL
+    on person.banner_person_id = goremal.goremal_pidm
+
 select * from information_schema.columns where table_name = 'PERSON' and table_schema = 'NORMALIZADO_BANNER'
-select top 10 * from NORMALIZADO_BANNER.PERSON
+select top 10000 * from NORMALIZADO_BANNER.PERSON
 /*
 rut
 check_digit
@@ -170,6 +266,11 @@ SELECT count(distinct rut) FROM NORMALIZADO_PEOPLE_SOFT.person --59681
 
 SELECT top 10 * FROM PEOPLE_SOFT.PS_PERSONAL_DATA where dt_of_death is not null
 
-SELECT TOP 10 * FROM NORMALIZADO_PEOPLE_SOFT.PERSON
+SELECT TOP 5 * FROM NORMALIZADO_PEOPLE_SOFT.PERSON
+SELECT TOP 15 * FROM NORMALIZADO_PEOPLE_SOFT.EDUCATIONAL_LEVEL
+
 SELECT TOP 100 * FROM NORMALIZADO_PEOPLE_SOFT.health_plan
 SELECT TOP 100 * FROM NORMALIZADO_PEOPLE_SOFT.AFP
+
+select top 5 * from HISTACADEMICO.grado_academico where doble_titul <> 'N'
+select top 5 * from HISTACADEMICO.tipo_grado_academico
