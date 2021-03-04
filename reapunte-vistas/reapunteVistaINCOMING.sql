@@ -1,0 +1,83 @@
+-- RAI.TBL_VW_INCOMING
+/*
+UC_BANNER	ASIGN
+ADMISION	CASO_ADMIS_HIST
+RAI	CONVENIO_INTERCAMBIO_HIST
+UC_BANNER	CURRICULUM
+RAI	ESTADO_POSTULACION_EXTRJ_HIST
+UC_BANNER	HIST_ALUMNO_CURSO_VIG
+UC_BANNER	PAIS_HIST
+RAI	POSTULACION_EXTRJ_HIST
+RAI	RAI_INSTITUCION_HIST
+ADMISION	SOLIC_INGR_HIST
+RAI	TIPO_INTERCAMBIO_HIST
+GOBDI	UNIDAD_ACADEMICA
+ADMISION	VIA_ADMIS_HIST
+*/
+
+-- go
+select top 4 * from ADMISION.CASO_ADMIS_HIST
+select top 4 * from ADMISION.CASO_ADMIS
+select count(1) from ADMISION.CASO_ADMIS_HIST
+select count(1) from ADMISION.CASO_ADMIS
+
+-- go
+select top 4 * from RAI.CONVENIO_INTERCAMBIO_HIST
+select top 4 * from RAI.CONVENIO_INTERCAMBIO
+select count(1) from RAI.CONVENIO_INTERCAMBIO_HIST
+select count(1) from RAI.CONVENIO_INTERCAMBIO
+
+-- go 
+select top 4 * from RAI.ESTADO_POSTULACION_EXTRJ_HIST
+select top 4 * from RAI.ESTADO_POSTULACION_EXTRJ
+select count(1) from RAI.ESTADO_POSTULACION_EXTRJ_HIST
+select count(1) from RAI.ESTADO_POSTULACION_EXTRJ
+
+-- go
+select top 4 * from UC_BANNER.PAIS_HIST
+select top 4 * from UC_BANNER.PAIS
+select count(1) from UC_BANNER.PAIS_HIST
+select count(1) from UC_BANNER.PAIS
+
+-- go
+select top 4 * from RAI.POSTULACION_EXTRJ_HIST
+select top 4 * from RAI.POSTULACION_EXTRJ
+select count(1) from RAI.POSTULACION_EXTRJ_HIST
+select count(1) from RAI.POSTULACION_EXTRJ
+
+--go
+select top 4 * from UC_BANNER.PAIS_HIST
+select top 4 * from UC_BANNER.PAIS
+select count(1) from UC_BANNER.PAIS_HIST
+select count(1) from UC_BANNER.PAIS
+
+--go
+select top 4 * from RAI.POSTULACION_EXTRJ_HIST
+select top 4 * from RAI.POSTULACION_EXTRJ
+select count(1) from RAI.POSTULACION_EXTRJ_HIST
+select count(1) from RAI.POSTULACION_EXTRJ
+
+--go
+select top 4 * from RAI.RAI_INSTITUCION_HIST
+select top 4 * from RAI.RAI_INSTITUCION
+select count(1) from RAI.RAI_INSTITUCION_HIST 
+select count(1) from RAI.RAI_INSTITUCION      
+
+--go?
+select top 4 * from ADMISION.SOLIC_INGR_HIST
+select top 4 * from ADMISION.SOLIC_INGR
+select count(1) from ADMISION.SOLIC_INGR_HIST --202198
+select count(1) from ADMISION.SOLIC_INGR      --5245
+
+--go
+select top 4 * from RAI.TIPO_INTERCAMBIO_HIST
+select top 4 * from RAI.TIPO_INTERCAMBIO
+select count(1) from RAI.TIPO_INTERCAMBIO_HIST
+select count(1) from RAI.TIPO_INTERCAMBIO
+
+--go
+select top 4 * from ADMISION.VIA_ADMIS_HIST
+select top 4 * from ADMISION.VIA_ADMIS
+select count(1) from ADMISION.VIA_ADMIS_HIST
+select count(1) from ADMISION.VIA_ADMIS
+
