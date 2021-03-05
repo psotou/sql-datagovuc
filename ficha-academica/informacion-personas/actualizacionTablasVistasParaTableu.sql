@@ -61,8 +61,6 @@ VALUES ('UC_BANNER', 'CARRERA', 1)
 
 
 
-select top 10 * from sys.objects
-
 WITH TABS AS ( 
 SELECT 
        ISVTU.VIEW_SCHEMA   AS NombreEsquema
@@ -74,8 +72,6 @@ SELECT
 FROM INFORMATION_SCHEMA.VIEW_TABLE_USAGE AS ISVTU
 LEFT JOIN sys.objects                    AS SO
      ON ISVTU.TABLE_SCHEMA = SCHEMA_NAME(SO.schema_id)
-WHERE ISVTU.VIEW_NAME LIKE '%TBL%'
+WHERE ISVTU.VIEW_NAME = 'TBL_VW_INCOMING'
 )
-select * from tabs where NombreVista like '%ADM%'
-
-SELECT DISTINCT(NombreVista) from tabs order by 
+SELECT EsquemaTablaQueUsaLaVista, TablaQueUsaLaVista, max(FechaModTabla) from TABS group by EsquemaTablaQueUsaLaVista, TablaQueUsaLaVista
