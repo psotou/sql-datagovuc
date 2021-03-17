@@ -274,3 +274,4 @@ SELECT TOP 100 * FROM NORMALIZADO_PEOPLE_SOFT.AFP
 
 select top 5 * from HISTACADEMICO.grado_academico where doble_titul <> 'N'
 select top 5 * from HISTACADEMICO.tipo_grado_academico
+
