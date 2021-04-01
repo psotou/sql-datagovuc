@@ -19,9 +19,17 @@ SELECT top 4 * FROM NORMALIZADO_BANNER.COURSE
 SELECT top 4 * FROM NORMALIZADO_BANNER.GRADE
 SELECT top 4 * FROM NORMALIZADO_BANNER.STUDENT_GRADUATES_FROM_SCHOOL
 
-
+select count(1) from [SC].[STUDENT_360_PAS] --10_877_010
 
 SELECT * FROM information_schema.tables where table_schema = 'NORMALIZADO_BANNER'
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [SC].[STUDENT_360_PAS] AS 
 
 /* COMMON TABLE EXPRESSIONS START */
 -- Dada la envergadura de la sábana, llamaremos solo las columnas
@@ -38,13 +46,6 @@ WITH section_term AS (
     FROM NORMALIZADO_BANNER.STUDENT_REGISTERS_SECTION AS nbsrs
     LEFT JOIN NORMALIZADO_BANNER.SECTION              AS nbse
         ON nbsrs.section_id = nbse.id
-    -- GROUP BY
-    --       nbsrs.enrollment_id
-    --     , nbsrs.section_id
-    --     , nbsrs.registration_type_id
-    --     , nbsrs.grade_id
-    --     , nbse.term_id
-    --     , nbse.course_id
 )
 , admision_prog AS (
     SELECT
@@ -130,10 +131,7 @@ WITH section_term AS (
 , grade AS (
     SELECT * FROM NORMALIZADO_BANNER.GRADE
 )
-, final AS (
-
-
-/* COMMON TABLE EXPRESSIONS END */
+, sabana_final AS (
 
 SELECT
       person.rut
@@ -201,6 +199,5 @@ LEFT JOIN cursos         ON section_term.course_id = cursos.id  --g
 LEFT JOIN grade          ON section_term.grade_id = grade.id --j
 
 )
-select top 10 * from final
--------
-
+SELECT * FROM sabana_final
+GO
