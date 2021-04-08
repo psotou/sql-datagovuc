@@ -40,7 +40,7 @@ select top 4 * from PEOPLE_SOFT.PS_CUS_ACUE_NC_TBL
 select top 4 * from PEOPLE_SOFT.PS_CUS_NCOMPAR_TBL where EMPLID like '%15461687-K%'
 
 -- Tablas de traducción
-select * from PEOPLE_SOFT.PSXLATITEMLANG where FIELDNAME like '%CUS_NIV_APR%' -- 0: aprobado, 1: rechazo decreto
+select * from PEOPLE_SOFT.PSXLATITEMLANG where FIELDNAME like '%CUS_NIV_APR%' -- 0: aprobado (decreto), 1: rechazo (decreto)
 select top 4 * from PEOPLE_SOFT.XLATTABLE_LNG where FIELDNAME like '%OPRID%'
 
 -- Búsqueda
